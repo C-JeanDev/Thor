@@ -1,3 +1,6 @@
+from ..utils.errors import *
+import sys
+sys.path.append('.')
 types = [
     "int", "float", "str", "bool"
 ]
@@ -44,6 +47,8 @@ class Parser:
                     self.variables.update(
                         {var_name: float(self.tokens[counter])})
                 case "str":
+                    if self.tokens[counter].count("'") != 2:
+                        raise
                     self.variables.update(
                         {var_name: str(self.tokens[counter])})
                 case "bool":

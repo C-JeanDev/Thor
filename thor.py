@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os
 import sys
-from interpreter.Lexer import Lexer
-from interpreter.Parser import Parser
+from interpreter.lexer import Lexer
+from interpreter.parser import Parser
 from Clibrary.lib import clibrary
  
 

@@ -19,7 +19,7 @@ class Lexer:
         self.print_tokens()
 
     def print_tokens(self) -> None:
-        for token in self.tokens:
+        for token in self.full_tokens:
             print(token)
 
     def read_from_file(self) -> list[str]:
@@ -44,25 +44,25 @@ class Lexer:
             chars = list(line)
 
             for char in chars:
-                if not char.isalnum():
-                    if self.clean_tokens(temp_str):
-                        self.tokens.append(temp_str)
-                        self.full_tokens.append((i, temp_str))
-                        temp_str = ""
-                    if self.clean_tokens(char):
-                        self.tokens.append(char)
-                        self.full_tokens.append((i, char))
-
-                elif char == "'" or in_quotes:
+                if char == "'" or in_quotes:
                     in_quotes = True
                     if char == "'":
                         q_counter += 1
-                    if q_counter % 2 == 0:
+                    if q_counter % 2 == 0 and temp_str != "'":
                         in_quotes = False
+                        temp_str += char
                         self.tokens.append(temp_str)
                         self.full_tokens.append((i, temp_str))
                         temp_str = ""
-                    else:
-                        temp_str += char
+                    temp_str += char
+                elif not char.isalnum():
+                    if self.clean_tokens(temp_str) and temp_str != "'":
+                        self.tokens.append(temp_str)
+                        self.full_tokens.append((i, temp_str))
+                        temp_str = ""
+                    if self.clean_tokens(char) and char != "'":
+                        self.tokens.append(char)
+                        self.full_tokens.append((i, char))
+
                 else:
                     temp_str += char

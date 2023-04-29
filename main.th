@@ -1,8 +1,7 @@
 let a: int = 0
 let b: float = 91
-let c: str = octpozz
-let d: bool = True
-
+let c: str = 'octpozz
+let d :    bool = True
 
 print('ciao')
 
