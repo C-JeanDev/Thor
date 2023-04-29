@@ -1,0 +1,12 @@
+let n: int = 1
+
+let n1: float = 2
+
+let raining: bool = True
+
+let lang: str = "thor"
+let extension: str = ".th"
+
+
+n = 2
+lang = "Python"

@@ -1,10 +1,3 @@
-from enum import Enum, auto
-
-
-class TokenType(Enum):
-    STRING = auto()
-    KEYWORD = auto()
-    NUMBER = auto()
 
 
 class Lexer:
@@ -24,7 +17,6 @@ class Lexer:
 
     def read_from_file(self) -> list[str]:
         file = open(self.filename, 'r')
-        print(type(file))
         return [line for line in file if line != '\n']
 
     def clean_tokens(self, token: str) -> bool:
@@ -44,11 +36,11 @@ class Lexer:
             chars = list(line)
 
             for char in chars:
-                if char == "'" or in_quotes:
+                if char == '"' or in_quotes:
                     in_quotes = True
-                    if char == "'":
+                    if char == '"':
                         q_counter += 1
-                    if q_counter % 2 == 0 and temp_str != "'":
+                    if q_counter % 2 == 0 and temp_str != '"':
                         in_quotes = False
                         temp_str += char
                         self.tokens.append(temp_str)
@@ -56,11 +48,11 @@ class Lexer:
                         temp_str = ""
                     temp_str += char
                 elif not char.isalnum():
-                    if self.clean_tokens(temp_str) and temp_str != "'":
+                    if self.clean_tokens(temp_str) and temp_str != '"':
                         self.tokens.append(temp_str)
                         self.full_tokens.append((i, temp_str))
                         temp_str = ""
-                    if self.clean_tokens(char) and char != "'":
+                    if self.clean_tokens(char) and char != '"':
                         self.tokens.append(char)
                         self.full_tokens.append((i, char))
 
