@@ -9,11 +9,6 @@ class Lexer:
         self.full_tokens: list[tuple[int, str]] = []
         self.tokens: list[str] = []
         self.lexer()
-        self.print_tokens()
-
-    def print_tokens(self) -> None:
-        for token in self.full_tokens:
-            print(token)
 
     def read_from_file(self) -> list[str]:
         file = open(self.filename, 'r')
@@ -47,7 +42,7 @@ class Lexer:
                         self.full_tokens.append((i, temp_str))
                         temp_str = ""
                     temp_str += char
-                elif not char.isalnum():
+                elif not char.isalnum() and char != '_':
                     if self.clean_tokens(temp_str) and temp_str != '"':
                         self.tokens.append(temp_str)
                         self.full_tokens.append((i, temp_str))

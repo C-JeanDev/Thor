@@ -1,11 +1,17 @@
-let lang: str = "thor"
-
+const lang_name: str = "thor"
+let string: str = "stringa"
+let v: str = string
 let x: int = 10
+let y: int = 1
 
-x = 20
+x = 55
+y = x
 
+let f: float = 12.901
 
-print("ciao")
+// How to print
+print("Hi")
+println("Hi There")
 
 if(a == b){
 	

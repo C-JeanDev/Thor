@@ -8,7 +8,7 @@ from interpreter.parser import Parser
 version: str = "0.7.0"
 
 def help_message():
-    pass
+    print()
 
 def cli() -> str:
     if len(sys.argv) >= 1:
