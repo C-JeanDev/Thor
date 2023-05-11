@@ -7,6 +7,3 @@ let raining: bool = True
 let lang: str = "thor"
 let extension: str = ".th"
 
-
-n = 2
-lang = "Python"

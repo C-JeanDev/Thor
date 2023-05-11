@@ -1,23 +1,46 @@
-const lang_name: str = "thor"
-let string: str = "stringa"
-let v: str = string
-let x: int = 10
-let y: int = 1
+const LANG_NAME: str = "thor"
+let name: str = "Jean"
+let surname: str = "Coppola"
+let full_name: str = name + " " + surname + "surname" 
+surname = surname + name
 
-x = 55
-y = x
 
-let f: float = 12.901
+let x: int = 100
+let y: int = 12
+let z: int = x * y 
 
-// How to print
-print("Hi")
-println("Hi There")
+let h:float = 91.12
+let j:float = 12.3
+let k:float = j * h
+let cacca: str = 0
 
-if(a == b){
-	
+
+if x > y{
+
+}else if  x < y{
+
+}else{
+
 }
 
-function main(){
-	print("Hello World")
+let start: int = 10
+let end: int = 100 
+
+for i = 1  to 10 
+{
+
 }
+
+for i = start to end{
+
+}
+
+let condition: bool = True
+
+// Comment
+
+while condition{
+
+}
+
 

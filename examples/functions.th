@@ -1,0 +1,7 @@
+func somma(a: int, b: int) : int{
+	return a+b
+}
+
+
+let a:int = somma(10+15)
+

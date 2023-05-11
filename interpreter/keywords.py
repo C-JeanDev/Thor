@@ -7,11 +7,16 @@ keywords = [
     # Variables
     "let", "const",
     # Statemants
-    "if", "else if", "else if", "while",
+    "if", "else if",
+    # Loops
+    "while", "for", "to",
     # print
     "print", "println",
     # parenthesis
     '(', ')', '{', '}',
     # comments
     '//',
+    # Operation
+    '+=', '*=', '/=', '-='
+
 ]

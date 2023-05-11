@@ -1,6 +1,6 @@
 from typing import Any
 from dataclasses import dataclass
-from .utils.errors import *
+from .errors import *
 from .keywords import types, keywords
 
 
@@ -22,6 +22,7 @@ class Parser:
         self.tkns_not_recognised: list[str] = []
         self.parser()
         self.end_code()
+    
 
     def end_code(self):
         print("VARIABLES")
@@ -60,36 +61,56 @@ class Parser:
                 var_type = var.var_type
                 data = var.data
 
+            op = str(data)
+
+            try:
+                while self.full_tokens[counter][0] == self.full_tokens[counter + 1][0]:
+                    counter += 1
+                    string: str = self.tokens[counter]
+                    if self.tokens[counter] not in self.variables and self.tokens[counter].count(
+                            '"') == 3:
+                        string = self.tokens[counter][1:]
+                    elif self.tokens[counter].replace('"', '') in self.variables and self.tokens[counter].count('"') != 2:
+                        string = self.variables.get(
+                            self.tokens[counter].replace(
+                                '"', ''), Variable(
+                                "", "", "")).data
+                    op += str(string)
+
+            except IndexError as e:
+                print(e)
+
+            if '+' in list(op) or var_type != 'str':
+                data = eval(op)
+
             match var_type:
                 case "int":
                     self.variables.update({var_name: Variable(
-                        var_name, data, "int", is_const)})
+                        var_name, int(data), "int", is_const)})
                 case "float":
                     data = str(data)
-                    print(line)
-                    print(self.full_tokens[counter][0])
-                    while self.full_tokens[counter][0] == self.full_tokens[counter + 1][0]:
-                        counter += 1
-                        data += self.tokens[counter]
-
+                    try:
+                        while self.full_tokens[counter][0] == self.full_tokens[counter + 1][0]:
+                            counter += 1
+                            data += self.tokens[counter]
+                    except IndexError as e:
+                        pass
                     data = float(data)
 
                     self.variables.update({var_name: Variable(
-                        var_name, data, "float", is_const)})
+                        var_name, float(data), "float", is_const)})
 
                 case "str":
-                    if not is_variable and self.tokens[counter].count(
-                            '"') != 2:
-                        raise StringAssignError
                     self.variables.update({var_name: Variable(
                         var_name, data, "str", is_const)})
                 case "bool":
                     self.variables.update({var_name: Variable(
-                        var_name, data, "bool", is_const)})
+                        var_name, bool(data), "bool", is_const)})
 
         return counter
 
     def handle_var_assignment(self, i: int) -> int:
+
         var_name = self.tokens[i]
         counter: int = i + 1
 
@@ -107,6 +128,27 @@ class Parser:
         if data in self.variables:
             var2: Variable = self.variables.get(data, Variable("", "", ""))
             data = var2.data
+
+        op: str = str(data)
+        try:
+            while self.full_tokens[counter][0] == self.full_tokens[counter + 1][0]:
+                counter += 1
+                string: str = self.tokens[counter]
+                if self.tokens[counter] not in self.variables and self.tokens[counter].count(
+                        '"') == 3:
+                    string = self.tokens[counter][1:]
+                elif self.tokens[counter].replace('"', '') in self.variables and self.tokens[counter].count('"') != 2:
+                    string = self.variables.get(
+                        self.tokens[counter].replace(
+                            '"', ''), Variable(
+                            "", "", "")).data
+                op += str(string)
+
+        except IndexError as e:
+            print(e)
+
+        if '+' in list(op) or var.var_type != 'str':
+            data = eval(op)
 
         match var.var_type:
 
@@ -127,12 +169,114 @@ class Parser:
             line = self.full_tokens[counter][0]
             while self.full_tokens[counter][0] == line:
                 counter += 1
-            return counter
+            return counter - 1
         else:
             raise
 
     def handle_conditional(self, i: int) -> int:
+        counter: int = i
+        condition: str = ""
+        while self.full_tokens[counter][0] == self.full_tokens[counter +
+                                                               1][0] or self.tokens[counter] != "{":
+            condition += self.tokens[counter]
+            counter += 1
 
+        condition = condition.replace('if', '')
+        conditionList = list(condition)
+
+        for i, tkn in enumerate(conditionList):
+            if tkn in self.variables:
+                conditionList[i] = str(
+                    self.variables.get(
+                        tkn, Variable(
+                            "", "", "")).data)
+
+        condition = "".join(conditionList)
+        print(condition)
+
+        if eval(condition):
+            start: int = counter
+            end: int = counter
+            # code to execute
+            while self.tokens[counter] != '}':
+                print(self.tokens[counter])
+                counter += 1
+                end += 1
+            counter = end
+            # code to skip
+            if self.tokens[counter] == "}":
+                counter += 1
+            while self.tokens[counter] == "else":
+                while self.tokens[counter] != "}":
+                    counter += 1
+                counter += 1
+
+            print(condition)
+            print(counter)
+            return counter - 1
+        return counter
+
+    def handle_else(self, i: int) -> int:
+        if self.tokens[i + 1] == "{":
+            # execute code
+            ...
+        elif self.tokens[i + 1] != "if":
+            return i
+        else:
+            assert False, "Else syntax error"
+        return i
+
+    def handle_for(self, i: int) -> int:
+        counter: int = i + 1
+        index_name: str = ""
+        index_start: str | int = ''
+        index_end: str | int = ''
+        if self.tokens[counter].isalnum() and self.tokens[counter + 1] == '=':
+
+            index_name = self.tokens[counter]
+            counter += 2
+            if self.tokens[counter].isnumeric():
+                index_start = int(self.tokens[counter])
+            elif self.tokens[counter] in self.variables:
+                index_start = self.variables.get(
+                    self.tokens[counter], Variable("", "", "")).data
+
+            counter += 1
+
+            if self.tokens[counter] == 'to':
+                counter += 1
+            if self.tokens[counter].isnumeric():
+                index_end = int(self.tokens[counter])
+            elif self.tokens[counter] in self.variables:
+                index_end = self.variables.get(
+                    self.tokens[counter], Variable("", "", "")).data
+
+        if not str(index_start).isnumeric():
+            assert False, "index cannot be a string"
+        if not str(index_end).isnumeric():
+            assert False, "index cannot be a string"
+
+        print(
+            f'index name : {index_name} index start {index_start}  index end {index_end}')
+        return counter
+
+    def handle_while(self, i: int) -> int:
+        counter: int = i
+        condition: str = ""
+        while self.full_tokens[counter][0] == self.full_tokens[counter +
+                                                               1][0] or self.tokens[counter] != '{':
+
+            condition += self.tokens[counter]
+            counter += 1
+
+        condition = condition.replace('while', '')
+        print('fine while',)
+        return counter
+
+    def handle_function(self, i: int) -> int:
+        return i 
+
+    def handle_struct(self, i: int) -> int:
         return i
 
     def parser(self) -> None:
@@ -150,7 +294,12 @@ class Parser:
                 i = self.handle_comment(i)
             elif token == "if":
                 i = self.handle_conditional(i)
+            elif token == "for":
+                i = self.handle_for(i)
+            elif token == "while":
+                i = self.handle_while(i)
             elif token not in keywords:
                 self.tkns_not_recognised.append(token)
 
             i += 1
+
